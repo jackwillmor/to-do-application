@@ -14,7 +14,7 @@ class TaskService
     public function list(int $projectId)
     {
         return Task::with('project')->where('project_id', $projectId)
-            ->orderBy('priority')->get();
+            ->orderBy('id', 'desc')->get();
     }
 
     /**
