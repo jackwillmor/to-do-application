@@ -37,7 +37,7 @@ class TaskController extends Controller
     {
         $projects = $this->projectService->getAllProjects();
 
-        return view('tasks.index', compact('projects'));
+        return view('app', compact('projects'));
     }
 
     public function list(ListTasksRequest $request): JsonResponse
