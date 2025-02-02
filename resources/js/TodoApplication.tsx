@@ -4,7 +4,7 @@ import Tasks from './components/Tasks';
 function TodoApplication() {
   return (
     <div className="App">
-      <Tasks />
+      <Tasks initialProjectId={1} title="To-Do Application" />
     </div>
   );
 }
