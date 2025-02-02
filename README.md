@@ -8,7 +8,9 @@ Clone the repository and install composer and node packages
 
 ```bash
 composer install
+```
 
+```bash
 npm install
 ```
 
