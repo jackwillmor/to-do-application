@@ -4,11 +4,38 @@ To-Do Application is a monolithic application functioning a basic todo list buil
 
 ## Installation
 
-Clone the repository and install composer and node packages
+Clone the repository and install composer packages
 
 ```bash
 composer install
 ```
+
+Update database in .env 
+```yaml
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE="<DATABASE_NAME>"
+DB_USERNAME="<USERNAME>"
+DB_PASSWORD="<PASSWORD>"
+```
+
+Run migrations
+```bash
+php artisan migrate
+```
+
+Run fixtures
+```bash
+php artisan migrate:fresh --seed
+```
+
+Clear caches
+```bash
+php artisan optimize
+```
+
+Run npm install
 
 ```bash
 npm install
