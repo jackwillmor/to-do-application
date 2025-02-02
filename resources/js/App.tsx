@@ -5,7 +5,7 @@ import TodoApplication from './components/Tasks'
 function App() {
   return (
     <React.StrictMode>
-      <TodoApplication />
+      <TodoApplication initialProjectId={1} title="To-Do Application" />
     </React.StrictMode>
   )
 }

@@ -6,38 +6,27 @@ use App\Http\Requests\Task\CreateTaskRequest;
 use App\Http\Requests\Task\ListTasksRequest;
 use App\Http\Requests\Task\ReorderTasksRequest;
 use App\Http\Requests\Task\UpdateTasksRequest;
-use App\Services\ProjectService;
 use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * @var ProjectService
-     */
-    protected ProjectService $projectService;
-
     /**
      * @var TaskService
      */
     protected TaskService $taskService;
 
     /**
-     * @param ProjectService $projectService
      * @param TaskService $taskService
      */
-    public function __construct(ProjectService $projectService, TaskService $taskService)
+    public function __construct(TaskService $taskService)
     {
-        $this->projectService = $projectService;
         $this->taskService = $taskService;
     }
 
     public function index()
     {
-        $projects = $this->projectService->getAllProjects();
-
-        return view('app', compact('projects'));
+        return view('app');
     }
 
     public function list(ListTasksRequest $request): JsonResponse

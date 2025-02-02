@@ -2,7 +2,7 @@ import React from 'react';
 import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Tasks from '../components/Tasks';
-import { getTasks, createTask, deleteTask } from '../lib/Utils';
+import {getTasks, createTask, deleteTask, getProjects} from '../lib/Utils';
 
 // Mock the utility functions
 jest.mock('../lib/Utils');
@@ -14,13 +14,27 @@ describe('Tasks Component', () => {
     });
 
     test('renders Tasks component with initial empty state', async () => {
+        (getProjects as jest.Mock).mockResolvedValue([]);
         (getTasks as jest.Mock).mockResolvedValue([]);
 
-        await act(async () => render(<Tasks />));
+        await act(async () => render(<Tasks initialProjectId={1} />));
 
         expect(screen.getByText('To-Do Application')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Title')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('Description')).toBeInTheDocument();
+    });
+
+    test('loads and displays projects on mount', async () => {
+        const mockProjects = [
+            { id: 1, title: 'Test Project', description: 'Test Description' }
+        ];
+        (getProjects as jest.Mock).mockResolvedValue(mockProjects);
+
+        await act(async () => render(<Tasks initialProjectId={1} />));
+
+        await waitFor(() => {
+            expect(getProjects).toHaveBeenCalled();
+        });
     });
 
     test('loads and displays tasks on mount', async () => {
@@ -29,7 +43,7 @@ describe('Tasks Component', () => {
         ];
         (getTasks as jest.Mock).mockResolvedValue(mockTasks);
 
-        await act(async () => render(<Tasks />));
+        await act(async () => render(<Tasks initialProjectId={1} />));
 
         await waitFor(() => {
             expect(getTasks).toHaveBeenCalledWith(1);
@@ -40,7 +54,7 @@ describe('Tasks Component', () => {
         (getTasks as jest.Mock).mockResolvedValue([]);
         (createTask as jest.Mock).mockResolvedValue({ success: true });
 
-        await act(async () => render(<Tasks />));
+        await act(async () => render(<Tasks initialProjectId={1} />));
 
         const titleInput = screen.getByPlaceholderText('Title');
         const descriptionInput = screen.getByPlaceholderText('Description');
@@ -66,7 +80,7 @@ describe('Tasks Component', () => {
         (getTasks as jest.Mock).mockResolvedValue(mockTasks);
         (deleteTask as jest.Mock).mockResolvedValue({ success: true });
 
-        await act(async () => render(<Tasks />));
+        await act(async () => render(<Tasks initialProjectId={1} />));
 
         await waitFor(() => {
             const deleteButton = screen.getByText('Delete');
@@ -77,13 +91,13 @@ describe('Tasks Component', () => {
     });
 
     test('handles empty input validation', async () => {
-        await act(async () => render(<Tasks />));
+        await act(async () => render(<Tasks initialProjectId={1} />));
 
         await waitFor(() => {
             const addButton = screen.getByText('Add Task');
             fireEvent.click(addButton);
         });
 
-        expect(createTask).toHaveBeenCalled();
+        expect(createTask).not.toHaveBeenCalled();
     });
 });

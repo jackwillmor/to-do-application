@@ -1,6 +1,22 @@
 import React, {useState, useEffect} from 'react';
 import { ToastContainer } from 'react-toastify';
-import {getTasks, createTask, deleteTask} from '../lib/Utils';
+import {getProjects, getTasks, createTask, deleteTask} from '../lib/Utils';
+import {InputComponent} from './InputComponent';
+import {ButtonComponent} from './ButtonComponent';
+import {SelectComponent} from './SelectComponent';
+
+interface TaskProps {
+    initialProjectId: number;
+    title?: string;
+    onProjectChange?: () => void;
+    onTaskChange?: () => void;
+}
+
+interface Project {
+    id: number;
+    name: string;
+    description: string;
+}
 
 interface Task {
     id: number;
@@ -11,55 +27,108 @@ interface Task {
     created: string|null;
 }
 
-const Tasks = () => {
-    const [tasks, setTasks] = useState([]);
-    const [title, setTitle] = useState<string>('');
+/**
+ * Returns a list of tasks for a given project ID.
+ *
+ * @param initialProjectId
+ * @param title
+ * @param onProjectChange
+ * @param onTaskChange
+ * @return {React.ReactElement}
+ */
+const Tasks: React.FC<TaskProps> = ({
+    initialProjectId = 1,
+    title = 'To-Do Application',
+    onProjectChange,
+    onTaskChange
+}): React.ReactElement => {
+    const [projectId, setProjectId] = useState(initialProjectId);
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [taskTitle, setTaskTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
 
     useEffect(() => {
-        // Hardcoded project ID for demonstration
-        getTasks(1).then((tasksData) => setTasks(tasksData));
-    }, []);
+        loadProjects().then(projectsData => setProjects(projectsData));
+        loadTasks().then(tasksData => setTasks(tasksData));
+    }, [projectId]);
 
-    const reloadTasks = () => {
-        getTasks(1).then((tasksData) => setTasks(tasksData));
+    /**
+     * Returns a list of projects.
+     */
+    const loadProjects = async () => {
+        const projectsData = await getProjects();
+        onProjectChange?.();
+        return projectsData;
     };
 
-    const addTask = () => {
-        createTask({ title, description }, 1).then(() => {
-            reloadTasks();
-            setTitle('');
-            setDescription('');
-        });
-    }
+    /**
+     * Returns a list of tasks for a given project ID.
+     */
+    const loadTasks = async () => {
+        const tasksData = await getTasks(projectId);
+        onTaskChange?.();
+        return tasksData;
+    };
 
-    const deleteItem = (id: number) => {
-        deleteTask(id).then(() => {
-            reloadTasks();
-        });
-    }
+    /**
+     * Handles the change of the project ID.
+     * @param projectId
+     */
+    const handleProjectChange = async (projectId: string) => {
+        setProjectId(parseInt(projectId));
+        loadTasks().then(tasksData => setTasks(tasksData));
+    };
 
+    /**
+     * Handles the addition of a new task.
+     */
+    const handleAddTask = async () => {
+        if (!taskTitle.trim()) return;
+
+        await createTask({ title: taskTitle, description }, projectId);
+
+        setTaskTitle('');
+        setDescription('');
+        loadTasks().then(tasksData => setTasks(tasksData));
+    };
+
+    /**
+     * Handles the deletion of a task.
+     * @param taskId
+     */
+    const handleDeleteTask = async (taskId: number) => {
+        await deleteTask(taskId);
+        loadTasks().then(tasksData => setTasks(tasksData));
+    };
+
+    /**
+     * Renders the component.
+     */
     return (
         <div>
             <ToastContainer autoClose={2000} />
             <div className="container mx-auto max-w-2xl mt-5">
-                <h1 className="text-black text-center mb-5">To-Do Application</h1>
+                <h1 className="text-black text-center mb-5">{title}</h1>
                 <div className="grid grid-cols-1">
-                    <input
+                    <SelectComponent
+                        options={projects.map(project => ({ value: project.id.toString(), label: project.name }))}
+                        emptyResults="No Projects Found"
+                        onChange={(e) => handleProjectChange(e.target.value)}
+                    />
+                    <InputComponent
                         type="text"
-                        className="mt-1 block border-solid border rounded w-full focus:shadow-md p-2"
-                        value={title}
-                        placeholder={"Title"}
-                        onChange={(e) => setTitle(e.target.value)}/>
-                    <input
+                        value={taskTitle}
+                        placeholder="Title"
+                        onChange={(e) => setTaskTitle(e.target.value)}
+                    />
+                    <InputComponent
                         type="text"
-                        className="mt-1 block w-full focus:shadow-md border rounded p-2"
                         value={description}
-                        placeholder={"Description"}
-                        onChange={(e) => setDescription(e.target.value)}/>
-                    <button className="mt-1 block w-full bg-green-400 rounded text-white p-1"
-                            onClick={addTask}>Add Task
-                    </button>
+                        placeholder="Description"
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                    <ButtonComponent label="Add Task" onClick={handleAddTask} />
                 </div>
 
                 <div className="border-t border-b border-t-gray-100 border-b-gray-100 mt-10 mb-10 pt-5 pb-5">Total Tasks: {tasks.length}</div>
@@ -68,7 +137,7 @@ const Tasks = () => {
                     {tasks.map((task) => (
                         <li key={task.id} className="grid grid-cols-1 content-center border border-gray-200 mb-5 p-5 relative">
                             <button className="bg-red-400 rounded p-2 text-white absolute top-0 right-0"
-                                    onClick={() => deleteItem(task.id)}>Delete
+                                    onClick={() => handleDeleteTask(task.id)}>Delete
                             </button>
                             <h3>{task.title}</h3>
                             <div className="mt-5">{task.description}</div>

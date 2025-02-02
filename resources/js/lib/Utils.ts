@@ -1,6 +1,11 @@
 import AxiosConfig from './AxiosConfig';
 import { toast } from 'react-toastify';
 
+/**
+ * Returns an error message.
+ *
+ * @param error
+ */
 export const getErrorMessage = (error: unknown) => {
     if (error instanceof Error) {
         return error.message;
@@ -8,7 +13,31 @@ export const getErrorMessage = (error: unknown) => {
     return String(error);
 };
 
-export const getTasks = async (projectId) => {
+/**
+ * Returns a list of projects.
+ */
+export const getProjects = async () => {
+    try {
+        const response = await AxiosConfig.get('/projects');
+        const { success, projects, message } = response.data;
+        if (success) {
+            return projects;
+        } else {
+            toast.error(message);
+            return [];
+        }
+    } catch (error) {
+        toast.error(getErrorMessage(error));
+        return [];
+    }
+}
+
+/**
+ * Returns a list of tasks for a given project ID.
+ *
+ * @param projectId
+ */
+export const getTasks = async (projectId: number) => {
     if (!projectId) {
         toast.error("Project is required!");
         return;
@@ -29,6 +58,11 @@ export const getTasks = async (projectId) => {
     }
 }
 
+/**
+ * Updates an existing task.
+ *
+ * @param task
+ */
 export const editTask = async (task: { id: number; title: string; description: any; }) => {
     if (!task.id) {
         return;
@@ -50,6 +84,11 @@ export const editTask = async (task: { id: number; title: string; description: a
     }
 }
 
+/**
+ * Deletes a task.
+ *
+ * @param id
+ */
 export const deleteTask = async (id: number) => {
     if (!id) {
         toast.error("Not a valid task!");
@@ -65,6 +104,12 @@ export const deleteTask = async (id: number) => {
     }
 }
 
+/**
+ * Creates a new task.
+ *
+ * @param task
+ * @param projectId
+ */
 export const createTask = async (task: { title: any; description: any; }, projectId: number) => {
     if (!projectId) {
         toast.error("Project is required!");
