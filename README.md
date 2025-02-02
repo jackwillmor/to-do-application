@@ -2,6 +2,12 @@
 
 To-Do Application is a monolithic application functioning a basic todo list built in Laravel and ReactJS.
 
+## Dependencies
+
+- PHP 8.2 or higher
+- Node >= v20.17.0
+- npm >= 10.8.2
+
 ## Installation
 
 Clone the repository and install composer packages
