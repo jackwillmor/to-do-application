@@ -16,6 +16,11 @@ Clone the repository and install composer packages
 composer install
 ```
 
+Generate App Key
+```bash
+php artisan key:generate
+```
+
 Update database in .env 
 ```yaml
 DB_CONNECTION=mysql
