@@ -2,6 +2,7 @@ import React from 'react';
 
 interface ButtonComponentProps {
     label: string;
+    className?: string;
     onClick: () => void;
 }
 
@@ -9,14 +10,16 @@ interface ButtonComponentProps {
  * ButtonComponent component.
  *
  * @param label
+ * @param className
  * @param onClick
  */
-export const ButtonComponent: React.FC<ButtonComponentProps> = ({
+export function ButtonComponent({
     label,
+    className,
     onClick
-}) => {
+}: ButtonComponentProps) {
     return <button
         onClick={onClick}
-        className="mt-1 block w-full bg-green-400 rounded text-white p-1"
+        className={className}
     >{label}</button>;
-};
+}

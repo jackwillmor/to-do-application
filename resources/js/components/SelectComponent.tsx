@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface SelectComponentProps {
+type SelectComponentProps = {
     options: { value: string; label: string }[];
     emptyResults: string;
     onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -13,11 +13,11 @@ interface SelectComponentProps {
  * @param emptyResults
  * @param onChange
  */
-export const SelectComponent: React.FC<SelectComponentProps> = ({
+export function SelectComponent({
     options,
     emptyResults,
     onChange
-}) => {
+}: SelectComponentProps) {
     return (
         <select
             onChange={onChange}
@@ -35,4 +35,4 @@ export const SelectComponent: React.FC<SelectComponentProps> = ({
             ))}
         </select>
     );
-};
+}

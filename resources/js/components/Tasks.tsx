@@ -5,7 +5,7 @@ import {InputComponent} from './InputComponent';
 import {ButtonComponent} from './ButtonComponent';
 import {SelectComponent} from './SelectComponent';
 
-interface TaskProps {
+type TaskProps = {
     initialProjectId: number;
     title?: string;
     onProjectChange?: () => void;
@@ -36,12 +36,12 @@ interface Task {
  * @param onTaskChange
  * @return {React.ReactElement}
  */
-const Tasks: React.FC<TaskProps> = ({
+function Tasks({
     initialProjectId = 1,
     title = 'To-Do Application',
     onProjectChange,
     onTaskChange
-}): React.ReactElement => {
+}: TaskProps): React.ReactElement {
     const [projectId, setProjectId] = useState(initialProjectId);
     const [projects, setProjects] = useState<Project[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -128,7 +128,11 @@ const Tasks: React.FC<TaskProps> = ({
                         placeholder="Description"
                         onChange={(e) => setDescription(e.target.value)}
                     />
-                    <ButtonComponent label="Add Task" onClick={handleAddTask} />
+                    <ButtonComponent
+                        label="Add Task"
+                        onClick={handleAddTask}
+                        className="block w-full bg-green-400 rounded text-white p-1"
+                    />
                 </div>
 
                 <div className="border-t border-b border-t-gray-100 border-b-gray-100 mt-10 mb-10 pt-5 pb-5">Total Tasks: {tasks.length}</div>
@@ -136,9 +140,11 @@ const Tasks: React.FC<TaskProps> = ({
                 <ul className="grid grid-cols-1">
                     {tasks.map((task) => (
                         <li key={task.id} className="grid grid-cols-1 content-center border border-gray-200 mb-5 p-5 relative">
-                            <button className="bg-red-400 rounded p-2 text-white absolute top-0 right-0"
-                                    onClick={() => handleDeleteTask(task.id)}>Delete
-                            </button>
+                            <ButtonComponent
+                                label="Delete"
+                                onClick={() => handleDeleteTask(task.id)}
+                                className="bg-red-400 rounded p-2 text-white absolute top-0 right-0"
+                            />
                             <h3>{task.title}</h3>
                             <div className="mt-5">{task.description}</div>
                         </li>
@@ -147,6 +153,6 @@ const Tasks: React.FC<TaskProps> = ({
             </div>
         </div>
     );
-};
+}
 
 export default Tasks;

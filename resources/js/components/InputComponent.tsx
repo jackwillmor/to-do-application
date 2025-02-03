@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface InputComponentProps {
+type InputComponentProps = {
     type: string;
     value: string;
     placeholder: string;
@@ -15,12 +15,12 @@ interface InputComponentProps {
  * @param placeholder
  * @param onChange
  */
-export const InputComponent: React.FC<InputComponentProps> = ({
+export function InputComponent({
     type,
     value,
     placeholder,
     onChange
-}) => {
+}: InputComponentProps){
     return <input
         type={type}
         value={value}
@@ -28,4 +28,4 @@ export const InputComponent: React.FC<InputComponentProps> = ({
         placeholder={placeholder}
         className="mt-1 block border-solid border rounded w-full focus:shadow-md p-2"
     />;
-};
+}
